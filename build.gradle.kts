@@ -35,7 +35,9 @@ dependencies {
 
 allprojects {
     group = "info.kinterest.functional"
-    plugins { maven }
+    apply {
+        plugin("maven")
+    }
     repositories {
         mavenCentral()
     }
