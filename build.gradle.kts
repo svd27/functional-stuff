@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.junit.platform.engine.TestSource
+import org.junit.platform.gradle.plugin.JUnitPlatformExtension
 
 val kotlin_version: String by extra
 buildscript {
@@ -28,6 +30,7 @@ apply {
 
 dependencies {
     "compile"(kotlin("stdlib-common"))
+    "compile"("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:0.22.5")
     "testCompile"(kotlin("test-annotations-common"))
     "testCompile"(kotlin("test-common"))
 }
@@ -44,11 +47,13 @@ allprojects {
     group = "info.kinterest.functional"
     apply {
         plugin("maven")
+        plugin("maven-publish")
     }
     repositories {
         mavenCentral()
     }
 }
+
 
 val jvm by extra {
     subprojects.filter {
@@ -60,6 +65,7 @@ configure(jvm) {
     apply {
         plugin("kotlin-platform-jvm")
         plugin("org.junit.platform.gradle.plugin")
+        maven
     }
     val compileKotlin: KotlinCompile by tasks
     compileKotlin.kotlinOptions {
@@ -70,10 +76,31 @@ configure(jvm) {
         jvmTarget = "1.8"
     }
 
+
+
+    configure<JUnitPlatformExtension> {
+        filters {
+            engines {
+                include("junit-jupiter")
+                include("spek")
+            }
+            includeClassNamePattern("Test.*")
+        }
+
+    }
+
     dependencies {
+        "compile"(kotlin("reflect"))
         "expectedBy"(rootProject)
         "compile"(kotlin("stdlib-jdk8"))
+        "testCompile"("org.jetbrains.spek:spek-api:1.1.5") {
+            exclude("org.jetbrains.kotlin")
+        }
+        "testRuntime"("org.jetbrains.spek:spek-junit-platform-engine:1.1.5") {
+            exclude("org.jetbrains.kotlin")
+        }
         "testCompile"("org.junit.jupiter:junit-jupiter-api:5.1.0")
+        "testRuntime"("org.junit.jupiter:junit-jupiter-engine:5.1.0")
     }
 }
 
