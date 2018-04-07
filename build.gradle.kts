@@ -6,11 +6,11 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-        maven ("https://dl.bintray.com/kotlin/kotlin-eap/")
+        maven("https://dl.bintray.com/kotlin/kotlin-eap/")
     }
 
     dependencies {
-        classpath ("org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.30")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.30")
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.1.0")
         classpath("com.kncept.junit5.reporter:junit-reporter:1.1.0")
     }
@@ -32,6 +32,13 @@ dependencies {
     "testCompile"(kotlin("test-common"))
 }
 
+maven {
+    pom().whenConfigured {
+        dependencies = dependencies.filter { d ->
+            d.toString().contains("functional-stuff")
+        }
+    }
+}
 
 allprojects {
     group = "info.kinterest.functional"
